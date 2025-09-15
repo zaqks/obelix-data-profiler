@@ -209,5 +209,4 @@ __marimo__/
 
 # use stuff
 data/
-report_*/
-report.*
+output/
