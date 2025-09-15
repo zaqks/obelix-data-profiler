@@ -172,7 +172,7 @@ def get_dataset_reproduction(config: Settings, summary: BaseDescription) -> Rend
             {"name": "Analysis started", "value": fmt(date_start)},
             {"name": "Analysis finished", "value": fmt(date_end)},
             {"name": "Duration", "value": fmt_timespan(duration)},
-            {"name": "Software version", "value": fmt_version(version)},
+            # {"name": "Software version", "value": fmt_version(version)},
             {"name": "Download configuration", "value": fmt_config(config_file)},
         ],
         name="Reproduction",

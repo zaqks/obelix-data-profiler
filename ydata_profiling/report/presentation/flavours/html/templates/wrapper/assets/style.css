@@ -65,6 +65,8 @@ nav {
     height: var(--navbar-height);
     padding-top: 0 !important;
     padding-bottom: 0 !important;
+
+    margin-bottom: 100px;
 }
 
 .navbar-brand > img {
