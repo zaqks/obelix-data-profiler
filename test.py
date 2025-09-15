@@ -15,7 +15,6 @@ df = df.sample(frac=0.01, random_state=42)
 settings = Settings()
 settings.html.inline = False  # separate assets instead of inline
 settings.html.style.logo = "assets/logo.png"
-settings.html.style.primary_colors = ["#aaaaaa"]
 
 
 report = ProfileReport(df,
