@@ -1,0 +1,15 @@
+Given a list of DataFrame columns, determine if the dataset represents a timeseries:
+%% COLUMNS %%
+
+Rules:
+- Return a JSON object with two keys:
+  "ts_mode" (boolean): true if it is a timeseries, false otherwise
+  "timestamp_col" (string or null): the exact column name of the timestamp if ts_mode is true, otherwise null
+- The "timestamp_col" must match exactly (case and space sensitive) one of the columns in the dataset
+- If no valid timestamp column is found, "ts_mode" is false and "timestamp_col" is null.
+
+Example input: ["Date", "Temperature", "Pressure"]
+Example output: {"ts_mode": true, "timestamp_col": "Date"}
+
+Example input: ["temp", "pressure", "humidity"]
+Example output: {"ts_mode": false, "timestamp_col": null}

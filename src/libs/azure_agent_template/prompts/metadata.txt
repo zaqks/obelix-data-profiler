@@ -1,0 +1,19 @@
+Generate a JSON object where each key is a column name from the given list, and the value is a clear, concise description explaining the meaning and context of that column. Consider typical interpretations of column names in datasets, including technical, business, or domain-specific context. The output format should be:
+
+{
+"column_name_1": "description of column 1",
+"column_name_2": "description of column 2",
+...
+}
+
+Use these guidelines:
+
+    Base explanations on commonly understood meanings of column names.
+
+    Include details about the type of data contained and its usage if applicable.
+
+    Keep explanations brief but informative.
+
+
+here are the columns:
+%% COLUMNS %%

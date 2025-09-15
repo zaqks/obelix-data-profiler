@@ -1,0 +1,11 @@
+Evaluate the quality of my dataset based on these alerts and provide me with a numeric quality score out of 100. Also, give me actionable suggestions to fix or improve the dataset issues.
+
+Here are the alerts for my dataset:
+%% ALERTS %%
+
+Return the response in this JSON format:
+
+{
+score: int,
+suggs: list[str]
+}
