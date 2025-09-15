@@ -30,4 +30,4 @@ report = ProfileReport(df,
                        config=settings)
 
 
-report.to_file("report.html")
+report.to_file("output/report.html")
