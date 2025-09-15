@@ -1,15 +1,19 @@
 Given a list of DataFrame columns, determine if the dataset represents a timeseries:
 %% COLUMNS %%
-
 Rules:
-- Return a JSON object with two keys:
-  "ts_mode" (boolean): true if it is a timeseries, false otherwise
-  "timestamp_col" (string or null): the exact column name of the timestamp if ts_mode is true, otherwise null
-- The "timestamp_col" must match exactly (case and space sensitive) one of the columns in the dataset
-- If no valid timestamp column is found, "ts_mode" is false and "timestamp_col" is null.
 
-Example input: ["Date", "Temperature", "Pressure"]
-Example output: {"ts_mode": true, "timestamp_col": "Date"}
+    Return only a raw JSON string with two keys, no formatting or explanation:
+    "ts_mode" (boolean): true if it is a timeseries, false otherwise
+    "timestamp_col" (string or null): the exact column name of the timestamp if ts_mode is true, otherwise null
 
-Example input: ["temp", "pressure", "humidity"]
-Example output: {"ts_mode": false, "timestamp_col": null}
+    The "timestamp_col" must match exactly (case and space sensitive) one of the columns in the dataset
+
+    If no valid timestamp column is found, "ts_mode" is false and "timestamp_col" is null.
+    Examples:
+    Input: ["Date", "Temperature", "Pressure"]
+    Output: {"ts_mode": true, "timestamp_col": "Date"}
+
+Input: ["temp", "pressure", "humidity"]
+Output: {"ts_mode": false, "timestamp_col": null}
+
+IMPORTANT: return just the raw JSON string only, no formatting, no explanation, no extra text, no quotes around the JSON, Expecting property name enclosed in double quotes just like in a JSON file.

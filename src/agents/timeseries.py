@@ -8,13 +8,14 @@ class TimeSeriesAgent(AzureAgentTemplate):
 
     def is_timeserie(self, columns: list[str]) -> dict:
         """
-        returns {
+        returns (
             ts_mode: bool,
             timestamp_col: str
-        }
+        )
         """
 
         result = self.think({"COLUMNS": columns})
+        print(result)
         result = json.loads(result)
 
-        return result
+        return result.values()

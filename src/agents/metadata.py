@@ -8,13 +8,15 @@ class MetaDataAgent(AzureAgentTemplate):
 
     def get_metadata(self, columns: list[str]) -> dict:
         """
-        returns {
+        returns (
             ts_mode: bool,
             timestamp_col: str
-        }
+        )
         """
 
         result = self.think({"COLUMNS": columns})
         result = json.loads(result)
+
+        print(result)
 
         return result

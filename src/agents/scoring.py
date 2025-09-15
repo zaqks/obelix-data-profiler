@@ -8,13 +8,15 @@ class ScoringAgent(AzureAgentTemplate):
 
     def get_score(self, alerts: list[str]) -> dict:
         """
-        returns {
+        returns (
             score: int,
             suggs: list[str]
-        }
+        )
         """
 
-        result = self.think({"ALERTS": alerts})
+        result = self.think({"ALERTS": alerts})        
         result = json.loads(result)
 
-        return result
+        print(result)
+
+        return result.values()

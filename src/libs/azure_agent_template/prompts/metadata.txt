@@ -17,3 +17,5 @@ Use these guidelines:
 
 here are the columns:
 %% COLUMNS %%
+
+IMPORTANT: return just the raw JSON string only, no formatting, no explanation, no extra text, no quotes around the JSON, Expecting property name enclosed in double quotes just like in a JSON file.
