@@ -208,6 +208,5 @@ __marimo__/
 
 
 # use stuff
-data/
-output/report*
-media/
+media/datasets/
+media/reports/report_*
