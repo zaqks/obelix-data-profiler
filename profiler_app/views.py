@@ -49,7 +49,7 @@ def upload_dataset(request):
 
         # Read as DataFrame
         df = pd.read_csv(file_path)
-        df = df.sample(frac=0.005, random_state=42)
+        # df = df.sample(frac=0.005, random_state=42)
 
         # Create output directory for profiler reports
         output_dir = os.path.join(settings.MEDIA_ROOT, 'reports')

@@ -41,7 +41,7 @@ class ObelixProfiler:
         # Setup report settings
         settings = Settings()
         settings.html.inline = False  # separate assets
-        settings.html.style.logo = "/media/assets/logo.png"
+        settings.html.style.logo = "assets/logo.png"
 
         # Generate report
         report = ProfileReport(

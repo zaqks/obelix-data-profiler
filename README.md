@@ -1,5 +1,5 @@
-# juno-data-profiling
-EDA tool with automated, interactive visual reports, detailed statistics, data type inference, missing value analysis, correlation matrices, time-series and text analysis, file and image metadata examination.
+# Obelix
+Agentic EDA tool with automated, interactive visual reports, detailed statistics, data type inference, missing value analysis, correlation matrices, time-series and text analysis, file and image metadata examination.
 
 ---
 ## Calculated metrics
@@ -24,4 +24,8 @@ EDA tool with automated, interactive visual reports, detailed statistics, data t
 - Text data analysis (common categories, unique tokens, script detection)
 - File/image metadata (file sizes, creation/modification dates, dimensions)
   
- 
+---
+## Screenshots
+<img src="docs/1.png" width="100%"> 
+<img src="docs/2.png" width="100%"> 
+<img src="docs/3.png" width="100%"> 
