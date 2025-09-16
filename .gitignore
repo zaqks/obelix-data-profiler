@@ -210,3 +210,5 @@ __marimo__/
 # use stuff
 media/datasets/
 media/reports/report_*
+
+.env.copy
