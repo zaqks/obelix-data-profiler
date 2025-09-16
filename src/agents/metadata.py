@@ -14,7 +14,7 @@ class MetaDataAgent(AzureAgentTemplate):
         )
         """
 
-        result = self.think({"COLUMNS": columns})
+        result = self.think({"COLUMNS": columns})        
         result = json.loads(result)
 
         print(result)

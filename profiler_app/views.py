@@ -33,7 +33,7 @@ def upload_dataset(request):
     if not uploaded_file.name.endswith('.csv'):
         return JsonResponse({'error': 'Please upload a CSV file'}, status=400)
 
-    try:
+    if 1:
         # Generate unique filename
         unique_id = str(uuid.uuid4())
         filename = f"{unique_id}_{uploaded_file.name}"
@@ -78,5 +78,5 @@ def upload_dataset(request):
             # f'/media/reports/{unique_id}.html'
         })
 
-    except Exception as e:
+    else:# Exception as e:
         return JsonResponse({'error': f'Error processing file: {str(e)}'}, status=500)

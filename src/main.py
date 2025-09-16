@@ -1,14 +1,15 @@
 import sys
 sys.path.insert(0, "./src/libs/")
 
-# DON"T FORMAT THIS
-import json
-import datetime
-import pandas as pd
-from .agents import TimeSeriesAgent, MetaDataAgent, ScoringAgent
-from ydata_profiling.config import Settings
 from ydata_profiling import ProfileReport
+from ydata_profiling.config import Settings
+from .agents import TimeSeriesAgent, MetaDataAgent, ScoringAgent
+import pandas as pd
+import datetime
+import json
 
+
+# DON"T FORMAT THIS
 
 
 class ObelixProfiler:
@@ -55,7 +56,8 @@ class ObelixProfiler:
             sort=sort_order,
             tsmode=ts_mode,
             variables={"descriptions": meta_cols},
-            config=settings
+            config=settings,
+            plot={"image_format": "png", "dpi": 300}
         )
 
         # Prepare timestamped output file path

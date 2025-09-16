@@ -9,6 +9,6 @@ class AzureAgentTemplate:
 
     def think(self, tokens: dict) -> str:
         prompt = pm.fill_prompt(self.prompt_name, tokens)
-        result = client.generate(prompt)
+        result = client.generate(prompt, max_tokens=10000)
 
         return result
