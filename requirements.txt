@@ -1,3 +1,6 @@
+# global
+setuptools
+
 # ydata dependencies
 scipy>=1.4.1
 pandas>1.1
@@ -7,7 +10,6 @@ PyYAML>=5.0.0
 jinja2>=2.11.1
 visions[type_image_path]>=0.7.5
 numpy>=1.16.0
-cgi
 htmlmin==0.1.12
 phik>=0.11.1
 requests>=2.24.0
