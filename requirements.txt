@@ -1,3 +1,6 @@
+# obelix
+ydata_profiling
+
 #azure
 python-dotenv
 openai
