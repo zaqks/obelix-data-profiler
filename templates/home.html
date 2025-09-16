@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Obelix Dataset Quality Profiler</title>
+
+    {% load static %}
+    <link rel="shortcut icon" href="{% static 'assets/logo.png' %}" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            color: #495057;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .welcome-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .app-logo {
+            width: 40px;
+            height: 40px;
+            background-image: url("{% static 'assets/logo.png' %}");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .welcome-text {
+            font-size: 32px;
+            font-weight: 300;
+            color: #495057;
+            margin: 0;
+        }
+
+        .welcome-subtitle {
+            font-size: 16px;
+            color: #6c757d;
+            margin-top: 8px;
+            max-width: 500px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+            min-height: 0;
+        }
+
+        .chat-messages.active {
+            display: flex;
+            height: 100vh;
+        }
+
+        .message {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            flex-shrink: 0;
+            font-size: 14px;
+        }
+
+        .message.bot .message-avatar {
+            background-image: url("{% static 'assets/logo.png' %}");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+        }
+
+        .message.user .message-avatar {
+            background: #007bff;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 8px;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        .message.bot .message-content {
+            background: white;
+            color: #495057;
+            border: 1px solid #e9ecef;
+        }
+
+        .message.user .message-content {
+            background: #007bff;
+            color: white;
+        }
+
+        .input-section {
+            padding: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .input-container {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .main-input {
+            width: 100%;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 24px;
+            padding: 12px 50px 12px 20px;
+            font-size: 16px;
+            color: #495057;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .main-input:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0,123,255,0.1);
+        }
+
+        .main-input::placeholder {
+            color: #6c757d;
+        }
+
+        .upload-trigger {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #007bff;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            font-size: 16px;
+        }
+
+        .upload-trigger:hover {
+            background: #0056b3;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-zone {
+            border: 2px dashed #007bff;
+            border-radius: 6px;
+            padding: 32px;
+            text-align: center;
+            background: #f8f9ff;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin: 12px 0;
+        }
+
+        .upload-zone:hover {
+            border-color: #0056b3;
+            background: #e7f3ff;
+        }
+
+        .upload-zone.dragover {
+            border-color: #dc3545;
+            background: #fff5f5;
+        }
+
+        .upload-icon {
+            font-size: 40px;
+            color: #007bff;
+            margin-bottom: 12px;
+        }
+
+        .upload-text {
+            font-size: 14px;
+            color: #007bff;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        .upload-subtext {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .results-container {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 12px 0;
+        }
+
+        .score-display {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .score-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .score-label {
+            font-size: 13px;
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .suggestions-list {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 16px;
+            border: 1px solid #e9ecef;
+        }
+
+        .suggestions-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .suggestion-item {
+            padding: 10px 12px;
+            background: white;
+            border-radius: 4px;
+            margin-bottom: 6px;
+            font-size: 13px;
+            line-height: 1.4;
+            border: 1px solid #e9ecef;
+            border-left: 3px solid #007bff;
+            color: #495057;
+        }
+
+        .view-details-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 16px auto 0;
+            text-decoration: none;
+        }
+
+        .view-details-btn:hover {
+            background: #0056b3;
+            transform: translateY(-1px);
+        }
+
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 4px;
+            padding: 12px 16px;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            max-width: 60px;
+        }
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #6c757d;
+            animation: typingDots 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes typingDots {
+            0%, 60%, 100% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+            30% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="welcome-section" id="welcomeSection">
+            <div class="logo-section">
+                <div class="app-logo"></div>
+            </div>
+            <h1 class="welcome-text">Hey there, I'm Obelix</h1>
+            <p class="welcome-subtitle">Your Dataset Quality Assistant. I can analyze your CSV files and provide comprehensive quality insights with detailed reports.</p>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+        </div>
+        
+        <div class="input-section">
+            <div class="input-container">
+                <input 
+                    type="text" 
+                    class="main-input" 
+                    id="mainInput"
+                    placeholder="Upload a CSV file to get started..."
+                    readonly
+                >
+                <button class="upload-trigger" id="uploadTrigger">📊</button>
+                <input type="file" id="fileInput" class="file-input" accept=".csv">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const chatMessages = document.getElementById('chatMessages');
+        const fileInput = document.getElementById('fileInput');
+        const uploadTrigger = document.getElementById('uploadTrigger');
+        const mainInput = document.getElementById('mainInput');
+        const welcomeSection = document.getElementById('welcomeSection');
+
+        // Upload trigger click
+        uploadTrigger.addEventListener('click', () => fileInput.click());
+        mainInput.addEventListener('click', () => fileInput.click());
+
+        // File input change
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileUpload(e.target.files[0]);
+            }
+        });
+
+        // Drag and drop on the whole page
+        document.addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
+
+        document.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].name.endsWith('.csv')) {
+                handleFileUpload(files[0]);
+            }
+        });
+
+        function showChatMode() {
+            welcomeSection.classList.add('hidden');
+            chatMessages.classList.add('active');
+        }
+
+        function hideInputFieldPermanently() {
+            document.querySelector('.input-section').classList.add('hidden');
+        }
+
+        function addMessage(content, isUser = false) {
+            showChatMode();
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            if (isUser) {
+                avatar.textContent = '👤';
+            }
+            
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+            messageContent.innerHTML = content;
+            
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(messageContent);
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function addTypingIndicator() {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message bot';
+            messageDiv.id = 'typingMessage';
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'typing-indicator';
+            typingDiv.style.display = 'flex';
+            typingDiv.innerHTML = `
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            `;
+            
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(typingDiv);
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const typingMessage = document.getElementById('typingMessage');
+            if (typingMessage) {
+                typingMessage.remove();
+            }
+        }
+
+        function getScoreColor(score) {
+            if (score >= 80) return '#28a745';
+            if (score >= 60) return '#ffc107';
+            return '#dc3545';
+        }
+
+        async function handleFileUpload(file) {
+            if (!file.name.endsWith('.csv')) {
+                addMessage('⚠️ Please upload a CSV file only.', false);
+                return;
+            }
+
+            // Show user message
+            addMessage(`📁 Uploaded: ${file.name}`, true);
+
+            // Hide input field permanently
+            hideInputFieldPermanently();
+
+            // Show typing indicator
+            addTypingIndicator();
+
+            const formData = new FormData();
+            formData.append('dataset', file);
+
+            try {
+                const response = await fetch('/upload/', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                removeTypingIndicator();
+
+                if (result.success) {
+                    const suggestionsHtml = result.suggestions.map(s => 
+                        `<div class="suggestion-item">💡 ${s}</div>`
+                    ).join('');
+
+                    const resultsHtml = `
+                        <div class="results-container">
+                            <div class="score-display">
+                                <div class="score-circle" style="background: ${getScoreColor(result.score)}">
+                                    ${result.score.toFixed(1)}
+                                </div>
+                                <div class="score-label">Dataset Quality Score</div>
+                            </div>
+                            
+                            <div class="suggestions-list">
+                                <div class="suggestions-title">
+                                    📋 Improvement Suggestions
+                                </div>
+                                ${suggestionsHtml}
+                            </div>
+                            
+                            <a href="${result.report_url}" target="_blank" class="view-details-btn">
+                                📊 View Detailed Report
+                            </a>
+                        </div>
+                    `;
+
+                    addMessage('🎉 Analysis complete! Here are your results:', false);
+                    addMessage(resultsHtml, false);
+                } else {
+                    addMessage(`❌ Error: ${result.error}`, false);
+                }
+            } catch (error) {
+                removeTypingIndicator();
+                addMessage('❌ Sorry, something went wrong. Please try again.', false);
+            }
+        }
+    </script>
+</body>
+</html>

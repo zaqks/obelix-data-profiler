@@ -1,15 +1,14 @@
-# DON"T FORMAT THIS
 import sys
 sys.path.insert(0, "./src/libs/")
 
-from ydata_profiling import ProfileReport
-from ydata_profiling.config import Settings
-from .agents import TimeSeriesAgent, MetaDataAgent, ScoringAgent
-
-
-import pandas as pd
-import datetime
+# DON"T FORMAT THIS
 import json
+import datetime
+import pandas as pd
+from .agents import TimeSeriesAgent, MetaDataAgent, ScoringAgent
+from ydata_profiling.config import Settings
+from ydata_profiling import ProfileReport
+
 
 
 class ObelixProfiler:
@@ -19,7 +18,7 @@ class ObelixProfiler:
         self.ts_agent = TimeSeriesAgent()
         self.meta_agent = MetaDataAgent()
         self.scr_agent = ScoringAgent()
-        self.report_path = None
+        self.report_name = None
         self.score = None
         self.suggestions = None
 
@@ -34,7 +33,7 @@ class ObelixProfiler:
             sort_order = "ascending"
         else:
             sort_by_col = None
-            sort_order = None        
+            sort_order = None
 
         # Get metadata descriptions
         meta_cols = self.meta_agent.get_metadata(cols)
@@ -42,7 +41,7 @@ class ObelixProfiler:
         # Setup report settings
         settings = Settings()
         settings.html.inline = False  # separate assets
-        settings.html.style.logo = "assets/logo.png"
+        settings.html.style.logo = "/media/assets/logo.png"
 
         # Generate report
         report = ProfileReport(
@@ -61,10 +60,11 @@ class ObelixProfiler:
 
         # Prepare timestamped output file path
         timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        self.report_path = f"{self.output_folder}/report_{timestamp}.html"
+        self.report_name = f"report_{timestamp}"
+        # self.report_name = f"{self.output_folder}/report.html"
 
         # Save report
-        report.to_file(self.report_path)
+        report.to_file(f"{self.output_folder}/{self.report_name}.html")
 
         # Scoring
         report_json = report.to_json()
@@ -72,4 +72,4 @@ class ObelixProfiler:
         self.score, self.suggestions = self.scr_agent.get_score(
             report_json['alerts'])
 
-        return self.report_path, self.score, self.suggestions
+        return self.report_name, self.score, self.suggestions
