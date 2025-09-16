@@ -11,7 +11,7 @@ source .venv/bin/activate
 
 # Upgrade pip and install dependencies
 pip install --upgrade pip
-pip install -r requirements.txt
+pip install -r requirements.txt --ignore-requires-python
 
 # Collect static files without interactive input
 # python manage.py collectstatic --no-input

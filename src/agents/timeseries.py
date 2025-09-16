@@ -1,5 +1,5 @@
 import json
-from src.libs.azure_agent_template import AzureAgentTemplate
+from src.azure_agent_template import AzureAgentTemplate
 
 
 class TimeSeriesAgent(AzureAgentTemplate):
