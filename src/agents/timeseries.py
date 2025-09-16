@@ -13,7 +13,7 @@ class TimeSeriesAgent(AzureAgentTemplate):
             timestamp_col: str
         )
         """
-
+        
         result = self.think({"COLUMNS": columns})
         print(result)
         result = json.loads(result)

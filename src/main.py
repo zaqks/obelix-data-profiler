@@ -6,9 +6,6 @@ import datetime
 import json
 
 
-# DON"T FORMAT THIS
-
-
 class ObelixProfiler:
     def __init__(self, df: pd.DataFrame, output_folder: str):
         self.df = df
@@ -60,10 +57,10 @@ class ObelixProfiler:
         # Prepare timestamped output file path
         timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         self.report_name = f"report_{timestamp}"
-        # self.report_name = f"{self.output_folder}/report.html"
 
         # Save report
-        report.to_file(f"{self.output_folder}/{self.report_name}.html")
+        output_path = f"{self.output_folder}/{self.report_name}.html"
+        report.to_file(output_path)
 
         # Scoring
         report_json = report.to_json()

@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Obelix Dataset Quality Profiler</title>
-    
+
     <link rel="shortcut icon" href="/media/reports/assets/logo.png" />
 
     <style>
@@ -121,7 +122,9 @@
         }
 
         .message.user .message-avatar {
-            background: #007bff;
+            background: white;
+            border: 1px solid #007bff;
+            color: #007bff;
         }
 
         .message-content {
@@ -168,7 +171,7 @@
 
         .main-input:focus {
             border-color: #007bff;
-            box-shadow: 0 0 0 2px rgba(0,123,255,0.1);
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
         }
 
         .main-input::placeholder {
@@ -357,6 +360,7 @@
                 opacity: 0;
                 transform: translateY(10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -364,10 +368,14 @@
         }
 
         @keyframes typingDots {
-            0%, 60%, 100% {
+
+            0%,
+            60%,
+            100% {
                 transform: scale(1);
                 opacity: 0.5;
             }
+
             30% {
                 transform: scale(1.2);
                 opacity: 1;
@@ -379,6 +387,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="app-container">
         <div class="welcome-section" id="welcomeSection">
@@ -386,21 +395,17 @@
                 <div class="app-logo"></div>
             </div>
             <h1 class="welcome-text">Hey there, I'm Obelix</h1>
-            <p class="welcome-subtitle">Your Dataset Quality Assistant. I can analyze your CSV files and provide comprehensive quality insights with detailed reports.</p>
+            <p class="welcome-subtitle">Your Dataset Quality Assistant. I can analyze your CSV files and provide
+                comprehensive quality insights with detailed reports.</p>
         </div>
-        
+
         <div class="chat-messages" id="chatMessages">
         </div>
-        
+
         <div class="input-section">
             <div class="input-container">
-                <input 
-                    type="text" 
-                    class="main-input" 
-                    id="mainInput"
-                    placeholder="Upload a CSV file to get started..."
-                    readonly
-                >
+                <input type="text" class="main-input" id="mainInput" placeholder="Upload a CSV file to get started..."
+                    readonly>
                 <button class="upload-trigger" id="uploadTrigger">↑</button>
                 <input type="file" id="fileInput" class="file-input" accept=".csv">
             </div>
@@ -449,23 +454,23 @@
 
         function addMessage(content, isUser = false) {
             showChatMode();
-            
+
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
-            
+
             const avatar = document.createElement('div');
             avatar.className = 'message-avatar';
             if (isUser) {
                 avatar.textContent = '👤';
             }
-            
+
             const messageContent = document.createElement('div');
             messageContent.className = 'message-content';
             messageContent.innerHTML = content;
-            
+
             messageDiv.appendChild(avatar);
             messageDiv.appendChild(messageContent);
-            
+
             chatMessages.appendChild(messageDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
@@ -474,10 +479,10 @@
             const messageDiv = document.createElement('div');
             messageDiv.className = 'message bot';
             messageDiv.id = 'typingMessage';
-            
+
             const avatar = document.createElement('div');
             avatar.className = 'message-avatar';
-            
+
             const typingDiv = document.createElement('div');
             typingDiv.className = 'typing-indicator';
             typingDiv.style.display = 'flex';
@@ -486,10 +491,10 @@
                 <div class="typing-dot"></div>
                 <div class="typing-dot"></div>
             `;
-            
+
             messageDiv.appendChild(avatar);
             messageDiv.appendChild(typingDiv);
-            
+
             chatMessages.appendChild(messageDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
@@ -535,7 +540,7 @@
                 removeTypingIndicator();
 
                 if (result.success) {
-                    const suggestionsHtml = result.suggestions.map(s => 
+                    const suggestionsHtml = result.suggestions.map(s =>
                         `<div class="suggestion-item">💡 ${s}</div>`
                     ).join('');
 
@@ -573,4 +578,5 @@
         }
     </script>
 </body>
+
 </html>
