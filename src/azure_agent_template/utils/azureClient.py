@@ -42,8 +42,7 @@ class AzureLLMClient:
             )
             return response['choices'][0]['message']['content'].strip()
         except KeyError as ke:
-            logger.error(f"KeyError accessing response content: {
-                         ke}, full response: {response}")
+            logger.error(f"KeyError accessing response content: {ke}, full response: {response}")
             return ""
         except Exception as e:
             logger.error(f"OpenAI call failed: {e}")
