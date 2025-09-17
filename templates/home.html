@@ -202,47 +202,13 @@
             background: #0056b3;
         }
 
+        .upload-trigger:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+
         .file-input {
             display: none;
-        }
-
-        .upload-zone {
-            border: 2px dashed #007bff;
-            border-radius: 6px;
-            padding: 32px;
-            text-align: center;
-            background: #f8f9ff;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            margin: 12px 0;
-        }
-
-        .upload-zone:hover {
-            border-color: #0056b3;
-            background: #e7f3ff;
-        }
-
-        .upload-zone.dragover {
-            border-color: #dc3545;
-            background: #fff5f5;
-        }
-
-        .upload-icon {
-            font-size: 40px;
-            color: #007bff;
-            margin-bottom: 12px;
-        }
-
-        .upload-text {
-            font-size: 14px;
-            color: #007bff;
-            font-weight: 500;
-            margin-bottom: 6px;
-        }
-
-        .upload-subtext {
-            font-size: 12px;
-            color: #6c757d;
         }
 
         .results-container {
@@ -328,31 +294,51 @@
             transform: translateY(-1px);
         }
 
-        .typing-indicator {
-            display: none;
-            align-items: center;
-            gap: 4px;
-            padding: 12px 16px;
+        .progress-indicator {
             background: white;
             border: 1px solid #e9ecef;
             border-radius: 8px;
-            max-width: 60px;
+            padding: 16px;
+            margin: 12px 0;
         }
 
-        .typing-dot {
-            width: 6px;
-            height: 6px;
+        .progress-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .progress-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e9ecef;
+            border-top: 2px solid #007bff;
             border-radius: 50%;
-            background: #6c757d;
-            animation: typingDots 1.4s infinite ease-in-out;
+            animation: spin 1s linear infinite;
         }
 
-        .typing-dot:nth-child(2) {
-            animation-delay: 0.2s;
+        .progress-text {
+            font-size: 14px;
+            color: #495057;
+            font-weight: 500;
         }
 
-        .typing-dot:nth-child(3) {
-            animation-delay: 0.4s;
+        .progress-details {
+            font-size: 13px;
+            color: #6c757d;
+            line-height: 1.4;
+        }
+
+        .countdown-timer {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         @keyframes fadeInUp {
@@ -360,25 +346,9 @@
                 opacity: 0;
                 transform: translateY(10px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
-            }
-        }
-
-        @keyframes typingDots {
-
-            0%,
-            60%,
-            100% {
-                transform: scale(1);
-                opacity: 0.5;
-            }
-
-            30% {
-                transform: scale(1.2);
-                opacity: 1;
             }
         }
 
@@ -419,9 +389,23 @@
         const mainInput = document.getElementById('mainInput');
         const welcomeSection = document.getElementById('welcomeSection');
 
+        let currentTaskId = null;
+        let pollingInterval = null;
+        let countdownTimer = null;
+        let nextPollTime = 0;
+
         // Upload trigger click
-        uploadTrigger.addEventListener('click', () => fileInput.click());
-        mainInput.addEventListener('click', () => fileInput.click());
+        uploadTrigger.addEventListener('click', () => {
+            if (!uploadTrigger.disabled) {
+                fileInput.click();
+            }
+        });
+
+        mainInput.addEventListener('click', () => {
+            if (!uploadTrigger.disabled) {
+                fileInput.click();
+            }
+        });
 
         // File input change
         fileInput.addEventListener('change', (e) => {
@@ -437,9 +421,11 @@
 
         document.addEventListener('drop', (e) => {
             e.preventDefault();
-            const files = e.dataTransfer.files;
-            if (files.length > 0 && files[0].name.endsWith('.csv')) {
-                handleFileUpload(files[0]);
+            if (!uploadTrigger.disabled) {
+                const files = e.dataTransfer.files;
+                if (files.length > 0 && files[0].name.endsWith('.csv')) {
+                    handleFileUpload(files[0]);
+                }
             }
         });
 
@@ -448,8 +434,14 @@
             chatMessages.classList.add('active');
         }
 
-        function hideInputFieldPermanently() {
-            document.querySelector('.input-section').classList.add('hidden');
+        function disableUploads() {
+            uploadTrigger.disabled = true;
+            mainInput.placeholder = "Processing your file...";
+        }
+
+        function enableUploads() {
+            uploadTrigger.disabled = false;
+            mainInput.placeholder = "Upload another CSV file...";
         }
 
         function addMessage(content, isUser = false) {
@@ -473,36 +465,68 @@
 
             chatMessages.appendChild(messageDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            return messageDiv;
         }
 
-        function addTypingIndicator() {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'message bot';
-            messageDiv.id = 'typingMessage';
-
-            const avatar = document.createElement('div');
-            avatar.className = 'message-avatar';
-
-            const typingDiv = document.createElement('div');
-            typingDiv.className = 'typing-indicator';
-            typingDiv.style.display = 'flex';
-            typingDiv.innerHTML = `
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
+        function addProgressIndicator(filename) {
+            const progressHtml = `
+                <div class="progress-indicator" id="progressIndicator">
+                    <div class="progress-header">
+                        <div class="progress-spinner"></div>
+                        <div class="progress-text">Processing ${filename}</div>
+                    </div>
+                    <div class="progress-details" id="progressDetails">
+                        File uploaded successfully. Analysis starting...
+                    </div>
+                    <div class="countdown-timer" id="countdownTimer">
+                        Next update in 30 seconds
+                    </div>
+                </div>
             `;
-
-            messageDiv.appendChild(avatar);
-            messageDiv.appendChild(typingDiv);
-
-            chatMessages.appendChild(messageDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            return addMessage(progressHtml, false);
         }
 
-        function removeTypingIndicator() {
-            const typingMessage = document.getElementById('typingMessage');
-            if (typingMessage) {
-                typingMessage.remove();
+        function updateProgressIndicator(message, showCountdown = true) {
+            const progressDetails = document.getElementById('progressDetails');
+            const countdownTimer = document.getElementById('countdownTimer');
+            
+            if (progressDetails) {
+                progressDetails.textContent = message;
+            }
+            
+            if (countdownTimer) {
+                countdownTimer.style.display = showCountdown ? 'block' : 'none';
+            }
+        }
+
+        function removeProgressIndicator() {
+            const progressIndicator = document.getElementById('progressIndicator');
+            if (progressIndicator) {
+                progressIndicator.parentElement.remove();
+            }
+        }
+
+        function startCountdown() {
+            stopCountdown(); // Clear any existing countdown
+            let seconds = 30;
+            nextPollTime = Date.now() + 30000;
+            
+            countdownTimer = setInterval(() => {
+                seconds--;
+                const countdownElement = document.getElementById('countdownTimer');
+                if (countdownElement && seconds > 0) {
+                    countdownElement.textContent = `Next update in ${seconds} seconds`;
+                } else if (countdownElement) {
+                    countdownElement.textContent = `Next update in 30 seconds`;
+                }
+            }, 1000);
+        }
+
+        function stopCountdown() {
+            if (countdownTimer) {
+                clearInterval(countdownTimer);
+                countdownTimer = null;
             }
         }
 
@@ -512,34 +536,17 @@
             return '#dc3545';
         }
 
-        async function handleFileUpload(file) {
-            if (!file.name.endsWith('.csv')) {
-                addMessage('⚠️ Please upload a CSV file only.', false);
-                return;
-            }
-
-            // Show user message
-            addMessage(`📁 Uploaded: ${file.name}`, true);
-
-            // Hide input field permanently
-            hideInputFieldPermanently();
-
-            // Show typing indicator
-            addTypingIndicator();
-
-            const formData = new FormData();
-            formData.append('dataset', file);
-
+        async function checkTaskStatus(taskId) {
             try {
-                const response = await fetch('/upload/', {
-                    method: 'POST',
-                    body: formData
-                });
-
+                const response = await fetch(`/status/${taskId}/`);
                 const result = await response.json();
-                removeTypingIndicator();
 
-                if (result.success) {
+                if (result.status === 'completed') {
+                    // Task completed successfully
+                    stopPolling();
+                    removeProgressIndicator();
+                    enableUploads();
+
                     const suggestionsHtml = result.suggestions.map(s =>
                         `<div class="suggestion-item">💡 ${s}</div>`
                     ).join('');
@@ -568,14 +575,95 @@
 
                     addMessage('🎉 Analysis complete! Here are your results:', false);
                     addMessage(resultsHtml, false);
+
+                } else if (result.status === 'failed') {
+                    // Task failed
+                    stopPolling();
+                    removeProgressIndicator();
+                    enableUploads();
+                    addMessage(`❌ Error: ${result.error}`, false);
+
+                } else if (result.status === 'processing' || result.status === 'queued') {
+                    // Task still in progress
+                    const message = result.message || 'Processing your dataset...';
+                    updateProgressIndicator(message);
+                    startCountdown();
+                }
+
+            } catch (error) {
+                console.error('Error checking status:', error);
+                updateProgressIndicator('Connection error. Retrying...', true);
+                startCountdown();
+            }
+        }
+
+        function startPolling(taskId) {
+            currentTaskId = taskId;
+            
+            // Check immediately
+            checkTaskStatus(taskId);
+            
+            // Set up polling every 30 seconds
+            pollingInterval = setInterval(() => {
+                checkTaskStatus(taskId);
+            }, 30000);
+        }
+
+        function stopPolling() {
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+                pollingInterval = null;
+            }
+            stopCountdown();
+            currentTaskId = null;
+        }
+
+        async function handleFileUpload(file) {
+            if (!file.name.endsWith('.csv')) {
+                addMessage('⚠️ Please upload a CSV file only.', false);
+                return;
+            }
+
+            // Show user message
+            addMessage(`📁 Uploaded: ${file.name}`, true);
+
+            // Disable further uploads
+            disableUploads();
+
+            // Show progress indicator
+            addProgressIndicator(file.name);
+
+            const formData = new FormData();
+            formData.append('dataset', file);
+
+            try {
+                const response = await fetch('/upload/', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Start polling for status updates
+                    updateProgressIndicator('Processing started. This may take several minutes...');
+                    startPolling(result.task_id);
                 } else {
+                    removeProgressIndicator();
+                    enableUploads();
                     addMessage(`❌ Error: ${result.error}`, false);
                 }
             } catch (error) {
-                removeTypingIndicator();
+                removeProgressIndicator();
+                enableUploads();
                 addMessage('❌ Sorry, something went wrong. Please try again.', false);
             }
         }
+
+        // Clean up on page unload
+        window.addEventListener('beforeunload', () => {
+            stopPolling();
+        });
     </script>
 </body>
 

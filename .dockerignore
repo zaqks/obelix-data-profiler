@@ -5,4 +5,5 @@ __pycache__
 *.pyc
 docs
 media/datasets/
+media/tasks/
 media/reports/report_*
