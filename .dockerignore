@@ -4,4 +4,5 @@
 __pycache__
 *.pyc
 docs
-media
+media/datasets/
+media/reports/report_*
